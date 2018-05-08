@@ -108,6 +108,8 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
      */
     private final String regionId;
 
+    private final Boolean privateNet;
+
     private final String username;
 
     private final String workspacePath;
@@ -141,6 +143,7 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
      * @param imageId an image slug e.g. "debian-8-x64", or an integer e.g. of a backup, such as "12345678"
      * @param sizeId the image size e.g. "512mb" or "1gb"
      * @param regionId the region e.g. "nyc1"
+     * @param privateNet whether private networks is enabled
      * @param username username to login
      * @param workspacePath path to the workspace
      * @param sshPort ssh port to be used
@@ -155,7 +158,7 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
      * @param initScript setup script to configure the slave
      */
     @DataBoundConstructor
-    public SlaveTemplate(String name, String imageId, String sizeId, String regionId, String username, String workspacePath,
+    public SlaveTemplate(String name, String imageId, String sizeId, String regionId, Boolean privateNet, String username, String workspacePath,
                          Integer sshPort, String idleTerminationInMinutes, String numExecutors, String labelString,
                          Boolean labellessJobsAllowed, String instanceCap, Boolean installMonitoring, String tags,
                          String userData, String initScript) {
@@ -178,6 +181,7 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
         this.labels = Util.fixNull(labelString);
         this.instanceCap = Integer.parseInt(instanceCap);
         this.installMonitoringAgent = installMonitoring;
+        this.privateNet = privateNet;
         this.tags = tags;
 
         this.userData = userData;
@@ -248,6 +252,7 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
             droplet.setKeys(newArrayList(new Key(sshKeyId)));
             droplet.setEnablePrivateNetworking(usePrivateNetworking);
             droplet.setInstallMonitoring(installMonitoringAgent);
+            droplet.setEnablePrivateNetworking(privateNet);
             droplet.setTags(Arrays.asList(Util.tokenize(Util.fixNull(tags))));
 
             if (!(userData == null || userData.trim().isEmpty())) {
@@ -466,6 +471,10 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
 
     public String getRegionId() {
         return regionId;
+    }
+
+    public boolean isPrivateNet() {
+        return privateNet;
     }
 
     public String getLabels() {
